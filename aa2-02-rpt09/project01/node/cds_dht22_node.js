@@ -31,6 +31,8 @@ var humi = "";
 var lux = "";
 var mdata = [];
 var firstcommaidx = 0;
+var secondcommaidx = 0;
+var thirdcommaidx = 0;
 
 parser.on("data", (data) => {
   // call back when data is received
