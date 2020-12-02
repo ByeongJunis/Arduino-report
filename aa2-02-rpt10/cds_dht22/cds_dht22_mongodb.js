@@ -11,7 +11,6 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 // MongoDB connection
 mongoose.connect("mongodb://localhost:27017/iot", {
-  // DB name
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -22,7 +21,12 @@ db.once("open", function callback() {
   console.log("mongo db connection OK.");
 });
 // Schema
-var iotSchema = new Schema({});
+var iotSchema = new Schema({
+  date: String,
+  temperature: String,
+  humidity: String,
+  luminosity: String,
+});
 // Display data on console in the case of saving data.
 iotSchema.methods.info = function () {
   var iotInfo = this.date
@@ -81,7 +85,6 @@ parser.on("data", function (data) {
       readData.lastIndexOf(",")
     );
     lux = readData.substring(readData.lastIndexOf(",") + 1);
-
     readData = "";
 
     dStr = getDateString();
@@ -89,17 +92,16 @@ parser.on("data", function (data) {
     mdata[1] = temp; // temperature data
     mdata[2] = humi; // humidity data
     mdata[3] = lux; // luminosity data
-    //console.log(mdata);
-    var iot = new {
+    var iot = new Sensor({
       date: dStr,
       temperature: temp,
       humidity: humi,
       luminosity: lux,
-    }();
-    // save iot data (document) to MongoDB
+    });
+    // save iot data to MongoDB
     iot.save(function (err, iot) {
       if (err) return handleEvent(err);
-      iot.info; // Display the information of iot data  on console.
+      iot.info(); // Display the information of iot data  on console.
     });
     io.sockets.emit("message", mdata); // send data to all clients
   } else {
